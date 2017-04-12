@@ -114,12 +114,21 @@
     board.position(game.fen());
   };
 
+  // Checks if game is over
+  var onChange = function() {
+    console.log(game.game_over());
+    if (game.game_over()) {
+      alert('Game Over');
+    }
+  };
+
   var cfg = {
     draggable: true,
     position: 'start',
     onDragStart: onDragStart,
     onDrop: onDrop,
-    onSnapEnd: onSnapEnd
+    onSnapEnd: onSnapEnd,
+    onChange: onChange
   };
   board = ChessBoard('board', cfg);
 // });
