@@ -55,7 +55,8 @@
 
   // Make best move.
   var makeBestMove = function() {
-    var bestMove = calculateBestMove(game);
+    // var bestMove = calculateBestMove(game);
+    var bestMove = minimax(3, game, true)[1];
 
     // game over
     if (bestMove === null) return;
@@ -63,6 +64,46 @@
     game.move(bestMove);
     board.position(game.fen());
   };
+
+    var minimax = function (depth, game, isMaximizingPlayer) {
+        var bestMove = null;
+        if (depth === 0) {
+            value = -1 * evaluateBoard(game.board());
+            return [value, bestMove];
+        }
+        var possibleMoves = game.moves();
+        if (isMaximizingPlayer) {
+            var bestValue = -999;
+            for (var i = 0; i < possibleMoves.length; i++) {
+                game.move(possibleMoves[i]);
+                var value = minimax(depth-1, game, !isMaximizingPlayer)[0];
+                // If equal, then randomly select a new move
+                if (value > bestValue ||
+                        (value === bestValue && Math.random() > 0.5)) {
+                    bestValue = value;
+                    bestMove = possibleMoves[i];
+                }
+                game.undo();
+            }
+        } else {
+            // Other player will make a move that maximizes their position.
+            // So they want more negative.
+            var bestValue = 999;
+            for (var i = 0; i < possibleMoves.length; i++) {
+                game.move(possibleMoves[i]);
+                var value = minimax(depth-1, game, !isMaximizingPlayer)[0];
+                // If equal, then randomly select a new move
+                if (value < bestValue ||
+                        (value === bestValue && Math.random() > 0.5)) {
+                    bestValue = value;
+                    bestMove = possibleMoves[i];
+                }
+                game.undo();
+            }
+        }
+        console.log(bestMove + " " + bestValue);
+        return [bestValue, bestMove];
+    };
 
   // Calculates what the best move is based on board value after move.
   var calculateBestMove = function (game) {
